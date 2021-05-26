@@ -1,0 +1,95 @@
+{
+  "surveys": [
+    {
+      "id": 1,
+      "name": "NPS",
+      "content": {
+        "questions": [
+          {
+            "question": "How likely are you to recommend our product?",
+            "answers": [
+              "1 Not at all likely",
+              "2",
+              "3",
+              "4",
+              "5",
+              "6",
+              "7",
+              "8",
+              "9",
+              "10 Highly likley"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "name": "Employee Satisfaction",
+      "content": {
+        "questions": [
+          {
+            "question": "How satisfied are you at this company?",
+            "answers": [
+              "Very unsatisfied",
+              "Unsatisied",
+              "Neutral",
+              "Satisfied",
+              "Very satisfied"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "name": "Lunch Order",
+      "content": {
+        "questions": [
+          {
+            "question": "What would you like for lunch today?",
+            "answers": ["Pizza", "Sandwiches", "Sushi", "Tacos"]
+          }
+        ]
+      }
+    }
+  ],
+  "responses": [
+    {
+      "id": 77747295293,
+      "content": {
+        "questions": [
+          {
+            "question": "How likely are you to recommend our product?",
+            "answer": "6"
+          }
+        ]
+      },
+      "completed": "2021-05-25T21:41:17.187Z"
+    },
+    {
+      "id": 707320912578,
+      "content": {
+        "questions": [
+          {
+            "question": "How likely are you to recommend our product?",
+            "answer": "4"
+          }
+        ]
+      },
+      "completed": "2021-05-25T22:20:25.259Z"
+    },
+    {
+        "id": 753380922800,
+        "content": {
+          "questions": [
+            {
+              "question": "What would you like for lunch today?",
+              "answer": "Pizza"
+            }
+          ]
+        },
+        "completed": "2021-05-25T22:20:25.259Z"
+      }
+  ]
+}

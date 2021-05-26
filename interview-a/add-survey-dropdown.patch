@@ -1,0 +1,211 @@
+diff --git a/interview-a/api/spec/support/types.ts b/interview-a/api/spec/support/types.ts
+index 0f88f56..6a4574c 100644
+--- a/interview-a/api/spec/support/types.ts
++++ b/interview-a/api/spec/support/types.ts
+@@ -11,6 +11,13 @@ export interface IResponse extends Response {
+     };
+ }
+ 
++export interface IResponseSurveyList extends Response {
++    body: {
++        error: string;
++        surveys: ISurvey[];
++    };
++}
++
+ export interface IReqBody {
+     response?: ISurveyResponse;
+ }
+diff --git a/interview-a/api/spec/tests/Surveys.spec.ts b/interview-a/api/spec/tests/Surveys.spec.ts
+index 6c5b5b1..5bcb1e3 100644
+--- a/interview-a/api/spec/tests/Surveys.spec.ts
++++ b/interview-a/api/spec/tests/Surveys.spec.ts
+@@ -6,7 +6,7 @@ import app from '@server';
+ import SurveyDao from '@daos/Survey/SurveyDao.mock';
+ import Survey from '@entities/Survey';
+ import { pErr } from '@shared/functions';
+-import { IResponse } from '../support/types';
++import { IResponse, IResponseSurveyList } from '../support/types';
+ 
+ 
+ 
+@@ -23,6 +23,35 @@ describe('Surveys Routes', () => {
+         done();
+     });
+ 
++    describe(`"GET:${surveysPath}"`, () => {
++        const callApi = () => {
++            return agent.get(surveysPath);
++        };
++
++        it(`returns a JSON object with all the surveys and a status code of "${OK}" if the
++            request was successful.`, (done) => {
++            // Setup spy
++            const surveyOne = new Survey("Favorites", {"questions":[{"question":"What's your favorite number?","answers":["1","2","3"]}]});
++            const surveyTwo = new Survey("Color Preference", {"questions":[{"question":"Which color would you prefer?","answers":["Red","Blue","Green"]}]});
++
++            spyOn(SurveyDao.prototype, 'getAll').and.returnValue(Promise.resolve([surveyOne, surveyTwo]));
++            // Call API
++            callApi()
++                .end((err: Error, res: IResponseSurveyList) => {
++                    pErr(err);
++                    expect(res.status).toBe(OK);
++                    // Cast instance-objects to 'Survey' objects
++                    const respSurveys = res.body.surveys;
++                    const retSurveyOne = new Survey(respSurveys[0]);
++                    const retSurveyTwo = new Survey(respSurveys[1]);
++                    expect(retSurveyOne).toEqual(surveyOne);
++                    expect(retSurveyTwo).toEqual(surveyTwo);
++                    expect(res.body.error).toBeUndefined();
++                    done();
++                });
++        });
++    });
++
+     describe(`"GET:${getSurveyPath}"`, () => {
+         const callApi = (id: number) => {
+             return agent.get(getSurveyPath.replace(':id', id.toString()));
+diff --git a/interview-a/api/src/routes/Surveys.ts b/interview-a/api/src/routes/Surveys.ts
+index fb33694..e280929 100644
+--- a/interview-a/api/src/routes/Surveys.ts
++++ b/interview-a/api/src/routes/Surveys.ts
+@@ -8,6 +8,26 @@ const { NOT_FOUND, OK } = StatusCodes;
+ 
+ 
+ 
++/**
++ * Get one survey, by ID.
++ *
++ * @param req The Express Request.
++ * @param res The Express Response.
++ * @returns
++ *   On success returns the survey as JSON `{"survey": {...}}`.
++ *   If the survey ID isn't found, returns a 404 with an empty body.
++ */
++ export async function getSurveys(req: Request, res: Response) {
++    const surveys = await surveyDao.getAll();
++    if (surveys) {
++        return res.status(OK)
++                  .json({surveys});
++    } else {
++        return res.status(NOT_FOUND).end();
++    }
++}
++
++
+ /**
+  * Get one survey, by ID.
+  *
+diff --git a/interview-a/api/src/routes/index.ts b/interview-a/api/src/routes/index.ts
+index b4f3836..4dc618e 100644
+--- a/interview-a/api/src/routes/index.ts
++++ b/interview-a/api/src/routes/index.ts
+@@ -1,9 +1,10 @@
+ import { Router } from 'express';
+-import { getSurvey } from './Surveys';
++import { getSurvey, getSurveys } from './Surveys';
+ import { addResponse, listResponses } from './Responses'
+ 
+ // Survey routes
+ const surveyRouter = Router();
++surveyRouter.get('/', getSurveys)
+ surveyRouter.get('/:id', getSurvey);
+ 
+ // Response routes
+diff --git a/interview-a/client/src/App.tsx b/interview-a/client/src/App.tsx
+index 0f2f929..5b1eba1 100644
+--- a/interview-a/client/src/App.tsx
++++ b/interview-a/client/src/App.tsx
+@@ -5,8 +5,9 @@ import {
+   Route,
+   Link
+ } from "react-router-dom";
+-import "./App.css";
+ import 'bootstrap/dist/css/bootstrap.min.css';
++import "./App.css";
++import SurveyDropdown from "./components/SurveyDropdown";
+ import SurveyView from "./views/SurveyView"
+ import { Container, Button } from "react-bootstrap";
+ 
+@@ -14,14 +15,9 @@ function App() {
+   return (
+     <Router>
+       <Container className="main pad-t">
+-        <Link to="/survey/1">
+-          <Button className="text-uppercase" variant="secondary" block={true}>
+-              Take a Survey
+-          </Button>
+-        </Link>
++        <SurveyDropdown />
+         <Switch>
+-          <Route path="/survey">
+-            <SurveyView surveyId={1}/>
++          <Route path="/survey/:id" render={props => <SurveyView surveyId={Number(props.match.params.id)} /> }>
+           </Route>
+         </Switch>
+       </Container>
+diff --git a/interview-a/client/src/components/SurveyDropdown.tsx b/interview-a/client/src/components/SurveyDropdown.tsx
+new file mode 100644
+index 0000000..d8b7574
+--- /dev/null
++++ b/interview-a/client/src/components/SurveyDropdown.tsx
+@@ -0,0 +1,59 @@
++import { useEffect, useState } from "react";
++import { useHistory } from "react-router-dom";
++import { ISurvey } from "../entities/Survey";
++import { Form, Button } from "react-bootstrap";
++
++
++
++const SurveyDropdown = () => {
++    const [surveyList, setSurveyList] = useState<ISurvey[]>();
++    const [selectedSurvey, setSelectedSurvey] = useState<string>("1");
++
++    let history = useHistory();
++
++    const onSubmit = (e: any) => {
++        const l = `/survey/${selectedSurvey}`
++        history.push(l)
++    }
++    
++    const onChange = (e: any) => {
++        setSelectedSurvey(e.target.value)
++    }
++
++    useEffect(() => {
++        const loadSurveys = async (): Promise<void> => {
++            const response = await fetch(`http://localhost:2047/api/surveys`);
++            let data;
++            try {
++                data = await response.json();
++            } catch(error) {
++                console.error(error);
++                data = null;
++            }
++            
++            if (response.ok) {
++                setSurveyList(data.surveys)
++            } else {
++                console.error(`API failure: ${response.status}`, data);
++            }
++        }
++        loadSurveys();
++    }, []);
++
++
++    return (
++        <>
++        <Form onSubmit={onSubmit}>
++          <Form.Label>
++            Select a Survey:
++          </Form.Label>
++            <Form.Control as="select" onChange={onChange}>
++                {surveyList?.map(s => (<option value={s.id}>{s.name}</option>))}
++            </Form.Control>
++          <Button className="my-1" variant="secondary" type="submit" block={true}>Submit</Button>
++        </Form>
++        </>
++    )
++}
++
++export default SurveyDropdown;
