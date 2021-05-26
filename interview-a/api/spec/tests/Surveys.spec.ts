@@ -6,7 +6,7 @@ import app from '@server';
 import SurveyDao from '@daos/Survey/SurveyDao.mock';
 import Survey from '@entities/Survey';
 import { pErr } from '@shared/functions';
-import { IResponse } from '../support/types';
+import { IResponse, IResponseSurveyList } from '../support/types';
 
 
 
@@ -21,6 +21,35 @@ describe('Surveys Routes', () => {
     beforeAll((done) => {
         agent = supertest.agent(app);
         done();
+    });
+
+    describe(`"GET:${surveysPath}"`, () => {
+        const callApi = () => {
+            return agent.get(surveysPath);
+        };
+
+        it(`returns a JSON object with all the surveys and a status code of "${OK}" if the
+            request was successful.`, (done) => {
+            // Setup spy
+            const surveyOne = new Survey("Favorites", {"questions":[{"question":"What's your favorite number?","answers":["1","2","3"]}]});
+            const surveyTwo = new Survey("Color Preference", {"questions":[{"question":"Which color would you prefer?","answers":["Red","Blue","Green"]}]});
+
+            spyOn(SurveyDao.prototype, 'getAll').and.returnValue(Promise.resolve([surveyOne, surveyTwo]));
+            // Call API
+            callApi()
+                .end((err: Error, res: IResponseSurveyList) => {
+                    pErr(err);
+                    expect(res.status).toBe(OK);
+                    // Cast instance-objects to 'Survey' objects
+                    const respSurveys = res.body.surveys;
+                    const retSurveyOne = new Survey(respSurveys[0]);
+                    const retSurveyTwo = new Survey(respSurveys[1]);
+                    expect(retSurveyOne).toEqual(surveyOne);
+                    expect(retSurveyTwo).toEqual(surveyTwo);
+                    expect(res.body.error).toBeUndefined();
+                    done();
+                });
+        });
     });
 
     describe(`"GET:${getSurveyPath}"`, () => {
