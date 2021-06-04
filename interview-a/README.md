@@ -12,25 +12,21 @@ This is a client-server project in TypeScript. The frontend is React talking to 
 
 > This exercise should take about an hour.
 
-- Briefly review the files in this folder to understand the code; you're not going to be asked about specifics in this codebase but knowing what's going on will help you in the following exercises. See the Project Structure notes below to guide you. (~ 5 minutes)
-- Review the Pull Request you were provided that adds a new feature. (~ 15 minutes)
-    - What do you see here that is worth commenting on? What are your comments?
+- Briefly review the files in this folder to understand the code; you're not going to be asked about specifics in this codebase but knowing what's going on will help you in the following exercises. See the Project Structure notes below to guide you. (~ 15 minutes)
+- Review the Pull Request you were provided that adds a new feature. (~ 10 minutes)
+    - This pull request requires changes. What’s the most critical issue that needs to be addressed? Why?
+    - What response would you provide? Please write this out.
     - At TeamSense our practice is to ask clarifying / learning questions in a review, so feel free to do that as well.
-    - Would you mark this Comment, Approve, or Request Changes? Why?
-    - Timebox yourself on this and focus on the aspects most important to review
     - **Do not submit your pull request**, just share it with your interviewer (via screenshot, screen share, or notes)
 - Write code for a new feature. (~ 30 minutes)
-    - Choose one of the following exercises:
-        - A quick and dirty summary of the count of responses to surveys
-            - You can do this in frontend code, as a backend API, or a full-stack solution
-            - For this exercise you can count all responses (don't worry about filtering for repsonses to specific surveys)
-        - Create a list of survey responses in the UI
-            - This must include an interactive UI
-            - You can use the existing API or create a new one
+    - Build a quick and dirty view that shows to total count of each response to surveys
+        - The views should show each unique response to each question with the count of times it was selected
+        - For this exercise you can count all responses (don't worry about filtering for repsonses to specific surveys)
+        - You may want to create more data to demo this (in `api/src/daos/MockDb/MockDb.json`)
     - Choose any language you like
     - You are welcome to clone the repo and create a branch to share, but **do not open a pull request**
     - Alternately, you can create your own git repo and share it with us in the interview
-- Review the log file [`sample.log`](sample.log) and note anything that looks off or that is worth investigating. This will be a topic to discuss with your interviewer. (~ 10 minutes)
+- Review the log file [`sample.log`](sample.log) and note anything that looks off or that is worth investigating. This will be a topic to discuss with your interviewer. (~ 5 minutes)
 
 # Project Structure
 This project is split between a backend API server ih Express and a frontend React app. Those are laid out as follows:
@@ -52,6 +48,7 @@ This project is split between a backend API server ih Express and a frontend Rea
     - `components`: shared React components
     - `entities`: data classes (models)
     - `views`: React views (page layouts)
+- `sample.log`: A subset of log file entries to review
 
 # Developer Setup
 This code base uses Node.js version 12, so install that.
