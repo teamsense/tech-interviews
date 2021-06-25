@@ -12,21 +12,27 @@ This is a client-server project in TypeScript. The frontend is React talking to 
 
 > This exercise should take about an hour.
 
+- Review the log file [`sample.log`](sample.log) and note anything that looks off or that is worth investigating. This will be a topic to discuss with your interviewer. (~ 5 minutes)
+    - The log entries are not tied to the sample code base (assume they could be another service)
+
 - Briefly review the files in this folder to understand the code; you're not going to be asked about specifics in this codebase but knowing what's going on will help you in the following exercises. See the Project Structure notes below to guide you. (~ 15 minutes)
+
 - Review the Pull Request you were provided that adds a new feature. (~ 10 minutes)
     - This pull request requires changes. What’s the most critical issue that needs to be addressed? Why?
     - What response would you provide? Please write this out.
     - At TeamSense our practice is to ask clarifying / learning questions in a review, so feel free to do that as well.
     - **Do not submit your pull request**, just share it with your interviewer (via screenshot, screen share, or notes)
+
 - Write code for a new feature. (~ 30 minutes)
     - Build a quick and dirty view that shows to total count of each response to surveys
         - The views should show each unique response to each question with the count of times it was selected
         - For this exercise you can count all responses (don't worry about filtering for repsonses to specific surveys)
         - You may want to create more data to demo this (in `api/src/daos/MockDb/MockDb.json`)
+        - One possible design (you are welcome to do anything you want):
+          ![A possible report design](docs/interview-a-possible-design.png)
     - Choose any language you like
     - You are welcome to clone the repo and create a branch to share, but **do not open a pull request**
     - Alternately, you can create your own git repo and share it with us in the interview
-- Review the log file [`sample.log`](sample.log) and note anything that looks off or that is worth investigating. This will be a topic to discuss with your interviewer. (~ 5 minutes)
 
 # Project Structure
 This project is split between a backend API server ih Express and a frontend React app. Those are laid out as follows:

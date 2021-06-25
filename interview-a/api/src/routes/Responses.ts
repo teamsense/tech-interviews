@@ -27,20 +27,3 @@ const { BAD_REQUEST, CREATED, OK } = StatusCodes;
     return res.status(CREATED).end();
 }
 
-/**
- * Add a response.
- *
- * @param req The Express Request.
- * @param res The Express Response.
- * @returns
- *   On success returns 200 Ok with an JSON object of the list of survey responses.
- */
- export async function listResponses(req: Request, res: Response) {
-    const responses = await responseDao.getAll();
-    if (responses) {
-        return res.status(OK)
-                  .json({responses});
-    } else {
-        return res.status(OK).json({responses: []});
-    }
-}
