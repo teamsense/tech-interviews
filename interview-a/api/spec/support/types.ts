@@ -11,6 +11,13 @@ export interface IResponse extends Response {
     };
 }
 
+export interface IResponseSurveyList extends Response {
+    body: {
+        error: string;
+        surveys: ISurvey[];
+    };
+}
+
 export interface IReqBody {
     response?: ISurveyResponse;
 }

@@ -1,9 +1,10 @@
 import { Router } from 'express';
-import { getSurvey } from './Surveys';
+import { getSurvey, getSurveys } from './Surveys';
 import { addResponse } from './Responses'
 
 // Survey routes
 const surveyRouter = Router();
+surveyRouter.get('/', getSurveys);
 surveyRouter.get('/:id', getSurvey);
 
 // Response routes
